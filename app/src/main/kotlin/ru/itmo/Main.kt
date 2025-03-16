@@ -1,10 +1,14 @@
 package ru.itmo
 
+import ru.itmo.ast.printAST
+import ru.itmo.lexer.Lexer
+import ru.itmo.parser.Parser
+import ru.itmo.tokens.Token
 import java.io.File
 
 fun main() {
-    val inputFile = File("app/src/main/kotlin/input.txt")
-    val outputFile = File("app/src/main/kotlin/output.txt")
+    val inputFile = File("app/src/main/kotlin/ru/itmo/files/input.txt")
+    val outputFile = File("app/src/main/kotlin/ru/itmo/files/output.txt")
 
     outputFile.writeText("")
 

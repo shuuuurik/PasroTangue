@@ -1,4 +1,7 @@
-package ru.itmo
+package ru.itmo.lexer
+
+import ru.itmo.tokens.Token
+import ru.itmo.tokens.TokenType
 
 class Lexer(private val input: String) {
     private var start = 0

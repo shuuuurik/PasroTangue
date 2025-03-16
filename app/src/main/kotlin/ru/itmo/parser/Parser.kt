@@ -1,4 +1,9 @@
-package ru.itmo
+package ru.itmo.parser
+
+import ru.itmo.ast.nodes.Expr
+import ru.itmo.ast.nodes.Stmt
+import ru.itmo.tokens.Token
+import ru.itmo.tokens.TokenType
 
 class Parser(private val tokens: List<Token>) {
     private var current = 0

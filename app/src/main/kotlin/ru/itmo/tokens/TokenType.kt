@@ -1,6 +1,4 @@
-package ru.itmo
-
-data class Token(val type: TokenType, val lexeme: String, val line: Int)
+package ru.itmo.tokens
 
 sealed class TokenType {
     // Ключевые слова
