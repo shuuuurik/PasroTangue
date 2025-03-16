@@ -21,99 +21,99 @@ sealed class Stmt {
     data class Return(val keyword: Token, val value: Expr?) : Stmt()
 }
 
-fun printAST(statements: List<Stmt>) {
-    println("Program")
+fun printAST(statements: List<Stmt>, output: Appendable) {
+    output.append("Program\n")
     val lastIndex = statements.size - 1
     statements.forEachIndexed { index, stmt ->
-        printStmtTree(stmt, "", index == lastIndex)
+        printStmtTree(stmt, "", index == lastIndex, output)
     }
 }
 
-private fun printStmtTree(stmt: Stmt, prefix: String, isLast: Boolean) {
+private fun printStmtTree(stmt: Stmt, prefix: String, isLast: Boolean, output: Appendable) {
     val branch = if (isLast) "└──" else "├──"
     when (stmt) {
         is Stmt.VarDecl -> {
-            println("$prefix$branch VarDecl (${stmt.name.lexeme})")
+            output.append("$prefix$branch VarDecl (${stmt.name.lexeme})\n")
             stmt.initializer?.let {
-                printExprTree("Initializer", it, prefix + if (isLast) "    " else "│   ", true)
+                printExprTree("Initializer", it, prefix + if (isLast) "    " else "│   ", true, output)
             }
         }
         is Stmt.Print -> {
-            println("$prefix$branch Print")
-            printExprTree("Expression", stmt.expression, prefix + if (isLast) "    " else "│   ", true)
+            output.append("$prefix$branch Print\n")
+            printExprTree("Expression", stmt.expression, prefix + if (isLast) "    " else "│   ", true, output)
         }
         is Stmt.Expression -> {
-            println("$prefix$branch Expression")
-            printExprTree("", stmt.expression, prefix + if (isLast) "    " else "│   ", true)
+            output.append("$prefix$branch Expression\n")
+            printExprTree("", stmt.expression, prefix + if (isLast) "    " else "│   ", true, output)
         }
         is Stmt.Block -> {
-            println("$prefix$branch Block")
+            output.append("$prefix$branch Block\n")
             val lastIdx = stmt.statements.size - 1
             stmt.statements.forEachIndexed { idx, s ->
-                printStmtTree(s, prefix + if (isLast) "    " else "│   ", idx == lastIdx)
+                printStmtTree(s, prefix + if (isLast) "    " else "│   ", idx == lastIdx, output)
             }
         }
         is Stmt.If -> {
-            println("$prefix$branch If")
-            printExprTree("Condition", stmt.condition, prefix + (if (isLast) "    " else "│   "), false)
+            output.append("$prefix$branch If\n")
+            printExprTree("Condition", stmt.condition, prefix + (if (isLast) "    " else "│   "), false, output)
             // Then-branch
-            println(prefix + (if (isLast) "    " else "│   ") + "├── Then")
-            printStmtTree(stmt.thenBranch, prefix + (if (isLast) "    " else "│   ") + "│   ", true)
+            output.append(prefix + (if (isLast) "    " else "│   ") + "├── Then\n")
+            printStmtTree(stmt.thenBranch, prefix + (if (isLast) "    " else "│   ") + "│   ", true, output)
             // Else-branch
             stmt.elseBranch?.let {
-                println(prefix + (if (isLast) "    " else "│   ") + "└── Else")
-                printStmtTree(it, prefix + (if (isLast) "    " else "│   ") + "    ", true)
+                output.append(prefix + (if (isLast) "    " else "│   ") + "└── Else\n")
+                printStmtTree(it, prefix + (if (isLast) "    " else "│   ") + "    ", true, output)
             }
         }
         is Stmt.FunctionDecl -> {
-            println("$prefix$branch FunctionDecl (${stmt.name.lexeme})")
+            output.append("$prefix$branch FunctionDecl (${stmt.name.lexeme})\n")
 
             // Параметры
             if (stmt.params.isNotEmpty()) {
-                println("$prefix${if (isLast) "    " else "│   "}├── Parameters")
+                output.append("$prefix${if (isLast) "    " else "│   "}├── Parameters\n")
                 val lastParamIdx = stmt.params.size - 1
                 stmt.params.forEachIndexed { idx, param ->
-                    println("$prefix${if (isLast) "    " else "│   "}│   ${if (idx == lastParamIdx) "└──" else "├──"} ${param.lexeme}")
+                    output.append("$prefix${if (isLast) "    " else "│   "}│   ${if (idx == lastParamIdx) "└──" else "├──"} ${param.lexeme}\n")
                 }
             }
 
             // Возвращаемый тип
-            println("$prefix${if (isLast) "    " else "│   "}├── ReturnType: ${stmt.returnType?.lexeme ?: "void"}")
+            output.append("$prefix${if (isLast) "    " else "│   "}├── ReturnType: ${stmt.returnType?.lexeme ?: "void"}\n")
 
             // Тело функции
-            println("$prefix${if (isLast) "    " else "│   "}└── Body")
+            output.append("$prefix${if (isLast) "    " else "│   "}└── Body\n")
             val lastStmtIdx = stmt.body.size - 1
             stmt.body.forEachIndexed { idx, bodyStmt ->
-                printStmtTree(bodyStmt, prefix + (if (isLast) "    " else "│   ") + "    ", idx == lastStmtIdx)
+                printStmtTree(bodyStmt, prefix + (if (isLast) "    " else "│   ") + "    ", idx == lastStmtIdx, output)
             }
         }
         is Stmt.Return -> {
-            println("$prefix$branch Return")
+            output.append("$prefix$branch Return\n")
             stmt.value?.let {
-                printExprTree("Value", it, prefix + (if (isLast) "    " else "│   "), true)
+                printExprTree("Value", it, prefix + (if (isLast) "    " else "│   "), true, output)
             }
         }
     }
 }
 
-private fun printExprTree(label: String, expr: Expr, prefix: String, isLast: Boolean) {
+private fun printExprTree(label: String, expr: Expr, prefix: String, isLast: Boolean, output: Appendable) {
     val branch = if (isLast) "└──" else "├──"
     val nodeLabel = if (label.isNotEmpty()) "$label: " else ""
     when (expr) {
-        is Expr.Literal -> println("$prefix$branch ${nodeLabel}Literal(${expr.value})")
-        is Expr.Variable -> println("$prefix$branch ${nodeLabel}Variable(${expr.name.lexeme})")
+        is Expr.Literal -> output.append("$prefix$branch ${nodeLabel}Literal(${expr.value})\n")
+        is Expr.Variable -> output.append("$prefix$branch ${nodeLabel}Variable(${expr.name.lexeme})\n")
         is Expr.Binary -> {
-            println("$prefix$branch ${nodeLabel}Binary (${expr.operator.lexeme})")
-            printExprTree("Left", expr.left, prefix + if (isLast) "    " else "│   ", false)
-            printExprTree("Right", expr.right, prefix + if (isLast) "    " else "│   ", true)
+            output.append("$prefix$branch ${nodeLabel}Binary (${expr.operator.lexeme})\n")
+            printExprTree("Left", expr.left, prefix + if (isLast) "    " else "│   ", false, output)
+            printExprTree("Right", expr.right, prefix + if (isLast) "    " else "│   ", true, output)
         }
         is Expr.Unary -> {
-            println("$prefix$branch ${nodeLabel}Unary (${expr.operator.lexeme})")
-            printExprTree("Right", expr.right, prefix + if (isLast) "    " else "│   ", true)
+            output.append("$prefix$branch ${nodeLabel}Unary (${expr.operator.lexeme})\n")
+            printExprTree("Right", expr.right, prefix + if (isLast) "    " else "│   ", true, output)
         }
         is Expr.Grouping -> {
-            println("$prefix$branch ${nodeLabel}Grouping")
-            printExprTree("", expr.expression, prefix + if (isLast) "    " else "│   ", true)
+            output.append("$prefix$branch ${nodeLabel}Grouping\n")
+            printExprTree("", expr.expression, prefix + if (isLast) "    " else "│   ", true, output)
         }
     }
 }
