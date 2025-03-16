@@ -8,6 +8,7 @@ sealed class TokenType {
     data object Func : TokenType()
     data object If : TokenType()
     data object Else : TokenType()
+    data object Return : TokenType()
 
     // Литералы
     data object Number : TokenType()
@@ -34,8 +35,11 @@ sealed class TokenType {
     data object RightParen : TokenType()
     data object LeftBrace : TokenType()
     data object RightBrace : TokenType()
+    data object Comma : TokenType()
+    data object Arrow : TokenType()
 
     // Другое
+    data object Void : TokenType()
     data object Print : TokenType()
     data object Eof : TokenType()
 }

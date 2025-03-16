@@ -16,6 +16,9 @@ sealed class Stmt {
     data class VarDecl(val name: Token, val initializer: Expr?) : Stmt()
     data class Block(val statements: List<Stmt>) : Stmt()
     data class If(val condition: Expr, val thenBranch: Stmt, val elseBranch: Stmt?) : Stmt()
+    data class FunctionDecl(val name: Token, val params: List<Token>,
+                            val returnType: Token?, val body: List<Stmt>): Stmt()
+    data class Return(val keyword: Token, val value: Expr?) : Stmt()
 }
 
 fun printAST(statements: List<Stmt>) {
@@ -52,21 +55,49 @@ private fun printStmtTree(stmt: Stmt, prefix: String, isLast: Boolean) {
         }
         is Stmt.If -> {
             println("$prefix$branch If")
-            printExprTree("Condition", stmt.condition, prefix + if (isLast) "    " else "│   ", true)
+            printExprTree("Condition", stmt.condition, prefix + (if (isLast) "    " else "│   "), false)
             // Then-branch
-            println(prefix + if (isLast) "    " else "│   " + "├── Then")
-            printStmtTree(stmt.thenBranch, prefix + if (isLast) "    " else "│   " + "│   ", true)
+            println(prefix + (if (isLast) "    " else "│   ") + "├── Then")
+            printStmtTree(stmt.thenBranch, prefix + (if (isLast) "    " else "│   ") + "│   ", true)
             // Else-branch
             stmt.elseBranch?.let {
-                println(prefix + if (isLast) "    " else "│   " + "└── Else")
-                printStmtTree(it, prefix + if (isLast) "    " else "│   " + "    ", true)
+                println(prefix + (if (isLast) "    " else "│   ") + "└── Else")
+                printStmtTree(it, prefix + (if (isLast) "    " else "│   ") + "    ", true)
+            }
+        }
+        is Stmt.FunctionDecl -> {
+            println("$prefix$branch FunctionDecl (${stmt.name.lexeme})")
+
+            // Параметры
+            if (stmt.params.isNotEmpty()) {
+                println("$prefix${if (isLast) "    " else "│   "}├── Parameters")
+                val lastParamIdx = stmt.params.size - 1
+                stmt.params.forEachIndexed { idx, param ->
+                    println("$prefix${if (isLast) "    " else "│   "}│   ${if (idx == lastParamIdx) "└──" else "├──"} ${param.lexeme}")
+                }
+            }
+
+            // Возвращаемый тип
+            println("$prefix${if (isLast) "    " else "│   "}├── ReturnType: ${stmt.returnType?.lexeme ?: "void"}")
+
+            // Тело функции
+            println("$prefix${if (isLast) "    " else "│   "}└── Body")
+            val lastStmtIdx = stmt.body.size - 1
+            stmt.body.forEachIndexed { idx, bodyStmt ->
+                printStmtTree(bodyStmt, prefix + (if (isLast) "    " else "│   ") + "    ", idx == lastStmtIdx)
+            }
+        }
+        is Stmt.Return -> {
+            println("$prefix$branch Return")
+            stmt.value?.let {
+                printExprTree("Value", it, prefix + (if (isLast) "    " else "│   "), true)
             }
         }
     }
 }
 
 private fun printExprTree(label: String, expr: Expr, prefix: String, isLast: Boolean) {
-    val branch = if (label.isNotEmpty()) "├──" else "└──"
+    val branch = if (isLast) "└──" else "├──"
     val nodeLabel = if (label.isNotEmpty()) "$label: " else ""
     when (expr) {
         is Expr.Literal -> println("$prefix$branch ${nodeLabel}Literal(${expr.value})")

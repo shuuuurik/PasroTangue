@@ -16,6 +16,8 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.Print)) return printStatement()
         if (match(TokenType.If)) return ifStatement()
         if (match(TokenType.LeftBrace)) return Stmt.Block(block())
+        if (match(TokenType.Func)) return functionDeclaration()
+        if (match(TokenType.Return)) return returnStatement()
         return expressionStatement()
     }
 
@@ -52,6 +54,48 @@ class Parser(private val tokens: List<Token>) {
         }
         consume(TokenType.RightBrace, "Ожидалась '}' после блока.")
         return statements
+    }
+
+    private fun functionDeclaration(): Stmt {
+        val name = consume(TokenType.Identifier, "Ожидался идентификатор имени функции.")
+        consume(TokenType.LeftParen, "Ожидалась '(' после имени функции.")
+
+        val params = mutableListOf<Token>()
+        if (!check(TokenType.RightParen)) {
+            do {
+                consume(TokenType.Var, "Ожидалось 'var' перед именем параметра.")
+                val paramName = consume(TokenType.Identifier, "Ожидался идентификатор параметра.")
+                params.add(paramName)
+            } while (match(TokenType.Comma))
+        }
+        consume(TokenType.RightParen, "Ожидалась ')' после параметров.")
+        val returnType: Token = if (match(TokenType.Arrow)) {
+            // Допускаются только два варианта: var или void
+            if (match(TokenType.Var)) {
+                previous()
+            } else if (match(TokenType.Void)) {
+                previous()
+            } else {
+                throw error(peek(), "Ожидался тип возвращаемого значения (var или void).")
+            }
+        } else {
+            Token(TokenType.Void, "void", -1)
+        }
+
+        consume(TokenType.LeftBrace, "Ожидалась '{' перед телом функции.")
+        val body = block()
+        return Stmt.FunctionDecl(name, params, returnType, body)
+    }
+
+    private fun returnStatement(): Stmt {
+        val keyword = previous()
+        // Если после return есть выражение, его разбираем, иначе оставляем value = null
+        val value: Expr? = if (!check(TokenType.RightBrace) && peek().line == keyword.line) {
+            expression()
+        } else {
+            null
+        }
+        return Stmt.Return(keyword, value)
     }
 
     private fun expressionStatement(): Stmt {

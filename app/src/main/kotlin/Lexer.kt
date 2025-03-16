@@ -26,7 +26,12 @@ class Lexer(private val input: String) {
     private fun scanToken() {
         when (val c = advance()) {
             '+' -> addToken(TokenType.Plus)
-            '-' -> addToken(TokenType.Minus)
+            '-' -> {
+                if (match('>'))
+                    addToken(TokenType.Arrow)
+                else
+                    addToken(TokenType.Minus)
+            }
             '*' -> addToken(TokenType.Multiply)
             '/' -> addToken(TokenType.Divide)
             '%' -> addToken(TokenType.Reminder)
@@ -44,6 +49,7 @@ class Lexer(private val input: String) {
             ')' -> addToken(TokenType.RightParen)
             '{' -> addToken(TokenType.LeftBrace)
             '}' -> addToken(TokenType.RightBrace)
+            ',' -> addToken(TokenType.Comma)
             ' ', '\r', '\t' -> {}
             '\n' -> line++
             // остальные случаи: числа, идентификаторы, строковые литералы
@@ -97,7 +103,9 @@ class Lexer(private val input: String) {
         "func" to TokenType.Func,
         "if" to TokenType.If,
         "else" to TokenType.Else,
-        "print" to TokenType.Print
+        "print" to TokenType.Print,
+        "void" to TokenType.Void,
+        "return" to TokenType.Return
     )
 
     private fun identifier() {
