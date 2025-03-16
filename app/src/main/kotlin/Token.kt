@@ -29,12 +29,13 @@ sealed class TokenType {
     data object EqualEqual : TokenType()
     data object NotEqual : TokenType()
 
+    // Символы
     data object LeftParen : TokenType()
     data object RightParen : TokenType()
     data object LeftBrace : TokenType()
     data object RightBrace : TokenType()
 
+    // Другое
     data object Print : TokenType()
-
     data object Eof : TokenType()
 }

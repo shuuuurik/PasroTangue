@@ -5,11 +5,19 @@ class Lexer(private val input: String) {
     private var current = 0
     private var line = 1
     private val tokens = mutableListOf<Token>()
+    private var hasErrors = false
 
     fun scanTokens(): List<Token> {
         while (!isAtEnd()) {
             start = current
-            scanToken()
+            try {
+                scanToken()
+            } catch (e: Exception) {
+                hasErrors = true
+            }
+        }
+        if (hasErrors) {
+            throw RuntimeException()
         }
         tokens.add(Token(TokenType.Eof, "", line))
         return tokens
@@ -29,7 +37,7 @@ class Lexer(private val input: String) {
                 if (match('=')) {
                     addToken(TokenType.NotEqual)
                 } else {
-                    println("Неизвестный символ: ! на строке $line")
+                    throw error("Ожидался символ = после !")
                 }
             }
             '(' -> addToken(TokenType.LeftParen)
@@ -48,7 +56,7 @@ class Lexer(private val input: String) {
                     stringLiteral()
                 }
                 else {
-                    println("Неизвестный символ: $c на строке $line")
+                    throw error("Неизвестный символ: $c")
                 }
             }
         }
@@ -104,16 +112,21 @@ class Lexer(private val input: String) {
     private fun stringLiteral() {
         while (!isAtEnd() && peek() != '"') {
             if (peek() == '\n') {
-                println("Незакрытая строка на строке $line")
-                return
+                throw error("Ожидалась \"")
             }
             advance()
         }
         if (isAtEnd()) {
-            println("Незакрытая строка на строке $line")
-            return
+            throw error("Ожидалась \"")
         }
         advance() // пропускаем закрывающую кавычку
         addToken(TokenType.StringLiteral)
     }
+
+    private fun error(message: String): TokenizeError {
+        println("Ошибка лексического анализа на строке ${line}: $message")
+        return TokenizeError()
+    }
+
+    private class TokenizeError : RuntimeException()
 }
