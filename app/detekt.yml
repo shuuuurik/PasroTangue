@@ -1,0 +1,17 @@
+#build:
+#  maxIssues: 10
+
+#output:
+#  reports:
+#    html: "target/reports/detekt-report.html"
+#    xml: "target/reports/detekt-report.xml"
+#    txt: "target/reports/detekt-report.txt"
+
+output-reports:
+  active: true
+  exclude:
+    - 'HtmlOutputReport'
+#    - 'TxtOutputReport'
+#    - 'XmlOutputReport'
+    - 'SarifOutputReport'
+    - 'MdOutputReport'

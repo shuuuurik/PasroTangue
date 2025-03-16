@@ -1,0 +1,19 @@
+8 kotlin files were analyzed.
+Complexity Report:
+        - 585 lines of code (loc)
+        - 493 source lines of code (sloc)
+        - 382 logical lines of code (lloc)
+        - 22 comment lines of code (cloc)
+        - 156 cyclomatic complexity (mcc)
+        - 174 cognitive complexity
+        - 0 number of total code smells
+        - 4% comment source ratio
+        - 408 mcc per 1,000 lloc
+        - 0 code smells per 1,000 lloc
+
+Project Statistics:
+        - number of properties: 57
+        - number of functions: 39
+        - number of classes: 20
+        - number of packages: 6
+        - number of kt files: 8
