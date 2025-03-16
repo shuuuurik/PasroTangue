@@ -16,9 +16,9 @@ fun main() {
         } else {
             print("a >= b")
         }
-        var n = x + y * 2
+        var n = 1 + 3 * 2
         print(n)
-        var m = (x + y) * 2
+        var m = (1 + 3) * 2
         print(m)
     """.trimIndent()
     val lexer = Lexer(input)
@@ -34,11 +34,8 @@ fun main() {
     try {
         val statements = parser.parse()
         println("Синтаксический анализ выполнен успешно!")
-        for (stmt in statements) {
-            println(stmt)
-        }
+        printAST(statements)
     } catch (error: Exception) {
         println("Синтаксический анализ завершился с ошибками.")
     }
-
 }
