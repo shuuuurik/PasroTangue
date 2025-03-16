@@ -14,10 +14,9 @@ func min(var a, var b) -> var {
     } else {
         return b
     }
-    return 42
 }
 
-var a = 5
+var a
 var b = 10
 var s = "Hello, world!"
 
