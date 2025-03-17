@@ -1,0 +1,85 @@
+Синтаксический анализ выполнен успешно!
+Program
+├── FunctionDecl (print_hello_world)
+│   ├── ReturnType: void
+│   └── Body
+│       └── Print
+│           └── Expression: Literal("Hello, world!")
+├── FunctionDecl (print_hello_creator)
+│   ├── Parameters
+│   │   └── creator_name
+│   ├── ReturnType: void
+│   └── Body
+│       ├── Print
+│       │   └── Expression: Binary (+)
+│       │       ├── Left: Binary (+)
+│       │       │   ├── Left: Literal("Hello, ")
+│       │       │   └── Right: Variable(creator_name)
+│       │       └── Right: Literal("!")
+│       ├── Return
+│       └── VarDecl (a)
+│           └── Initializer: Literal(42)
+├── FunctionDecl (min)
+│   ├── Parameters
+│   │   ├── a
+│   │   └── b
+│   ├── ReturnType: var
+│   └── Body
+│       └── If
+│           ├── Condition: Binary (<)
+│           │   ├── Left: Variable(a)
+│           │   └── Right: Variable(b)
+│           ├── Then
+│           │   └── Block
+│           │       └── Return
+│           │           └── Value: Variable(a)
+│           └── Else
+│               └── Block
+│                   └── Return
+│                       └── Value: Variable(b)
+├── VarDecl (a)
+├── VarDecl (b)
+│   └── Initializer: Literal(10)
+├── VarDecl (s)
+│   └── Initializer: Literal("Hello, world!")
+├── Block
+│   ├── VarDecl (x)
+│   │   └── Initializer: Literal(10)
+│   ├── Print
+│   │   └── Expression: Unary (-)
+│   │       └── Right: Variable(x)
+│   ├── VarDecl (y)
+│   │   └── Initializer: Literal(20)
+│   └── Print
+│       └── Expression: Binary (%)
+│           ├── Left: Variable(y)
+│           └── Right: Variable(x)
+├── If
+│   ├── Condition: Binary (<)
+│   │   ├── Left: Variable(a)
+│   │   └── Right: Variable(b)
+│   ├── Then
+│   │   └── Block
+│   │       └── Print
+│   │           └── Expression: Literal("a < b")
+│   └── Else
+│       └── Block
+│           └── Print
+│               └── Expression: Literal("a >= b")
+├── VarDecl (n)
+│   └── Initializer: Binary (+)
+│       ├── Left: Literal(1)
+│       └── Right: Binary (*)
+│           ├── Left: Literal(3)
+│           └── Right: Literal(2)
+├── Print
+│   └── Expression: Variable(n)
+├── VarDecl (m)
+│   └── Initializer: Binary (*)
+│       ├── Left: Grouping
+│       │   └── Binary (+)
+│       │       ├── Left: Literal(1)
+│       │       └── Right: Literal(3)
+│       └── Right: Literal(2)
+└── Print
+    └── Expression: Variable(m)
